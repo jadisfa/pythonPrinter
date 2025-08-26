@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家小助手</title>
+    <link rel="icon" href="{{contextPath}}/static/favicon.ico" type="image/x-icon">
+    <!-- 在页面底部引入marked.js库 -->
+    <script src="https://file.dianplus.cn/assets/js/markdown.js"></script>
+
+    <style>
+        body {
+            font-family: "楷体", "Kaiti SC", "STKaiti";
+        }
+
+        #MARKDOWN {
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        #MARKDOWN code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+        }
+
+        /* 基础容器样式优化 */
+        #MARKDOWN {
+            padding: 25px;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            background: #fafafa;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        /* 标题层级优化 */
+        #MARKDOWN h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 1.5em;
+        }
+
+        #MARKDOWN h2 {
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 8px;
+        }
+
+        #MARKDOWN h3 {
+            color: #2c3e50;
+        }
+
+        /* 代码块增强 */
+        #MARKDOWN pre {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            overflow: auto;
+            color: #03fe5b;
+            margin: 15px 0;
+        }
+
+        #MARKDOWN code {
+            font-family: 'Courier New', monospace;
+            background: #f5f7f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e74c3c;
+        }
+
+        #MARKDOWN pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* 列表和段落 */
+        #MARKDOWN p {
+            margin: 12px 0;
+            color: #34495e;
+        }
+
+        #MARKDOWN ul,
+        #MARKDOWN ol {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+
+        #MARKDOWN li {
+            margin: 8px 0;
+        }
+
+        /* 链接和引用 */
+        #MARKDOWN a {
+            color: #2980b9;
+            text-decoration: none;
+            border-bottom: 1px dotted #3498db;
+        }
+
+        #MARKDOWN a:hover {
+            color: #e74c3c;
+            border-bottom-style: solid;
+        }
+
+        #MARKDOWN blockquote {
+            border-left: 4px solid #3498db;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            margin: 15px 0;
+            color: #7f8c8d;
+        }
+
+        /* 表格样式 */
+        #MARKDOWN table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        #MARKDOWN th,
+        #MARKDOWN td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #MARKDOWN th {
+            background-color: #f2f6fa;
+            font-weight: bold;
+        }
+
+        #MARKDOWN tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .code-block {
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="MARKDOWN"><!-- 内容将动态填充 --></div>
+
+    <script>
+        // 1. 定义远程MD文件URL
+        const mdUrl = '/apidocs';
+
+        // 2. 获取容器元素
+        const markdownContainer = document.getElementById('MARKDOWN');
+
+        // 3. 使用fetch获取MD文件内容
+        fetch(mdUrl)
+            .then(response => response.text())
+            .then(mdContent => {
+                // 4. 使用marked.js解析Markdown
+                let htmlContent = marked.parse(mdContent);
+
+                // 5. 替换所有<pre><code>为带复制按钮的结构
+                htmlContent = htmlContent.replace(/<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/g, (match, attrs, codeContent) => {
+                    // 判断是否是JSON代码块（根据 ```json 标记）
+                    if (attrs.includes("language-json") || codeContent.trim().startsWith("{") || codeContent.trim().startsWith("[")) {
+                        return `
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyToClipboard(this)">复制</button>
+                            <pre><code${attrs}>${codeContent}</code></pre>
+                        </div>
+                    `;
+                    }
+                    return match;
+                });
+
+                // 6. 将处理后的内容注入容器
+                markdownContainer.innerHTML = htmlContent;
+            })
+            .catch(error => {
+                console.error('加载Markdown失败:', error);
+                markdownContainer.innerHTML = '<p>⚠️ 内容加载失败</p>';
+            });
+        function removeJsonComments(jsonString) {
+            let inString = false;
+            let inSingleComment = false;
+            let inMultiComment = false;
+            let result = '';
+
+            for (let i = 0; i < jsonString.length; i++) {
+                const char = jsonString[i];
+                const nextChar = jsonString[i + 1] || '';
+
+                // 处理字符串边界
+                if (!inSingleComment && !inMultiComment && char === '"') {
+                    inString = !inString;
+                }
+
+                // 单行注释开始
+                if (!inString && !inMultiComment && char === '/' && nextChar === '/') {
+                    inSingleComment = true;
+                    i++;
+                    continue;
+                }
+
+                // 多行注释开始
+                if (!inString && !inMultiComment && char === '/' && nextChar === '*') {
+                    inMultiComment = true;
+                    i++;
+                    continue;
+                }
+
+                // 多行注释结束
+                if (inMultiComment && char === '*' && nextChar === '/') {
+                    inMultiComment = false;
+                    i++;
+                    continue;
+                }
+
+                // 结束单行注释
+                if (inSingleComment && char === '\n') {
+                    inSingleComment = false;
+                }
+
+                // 只有不在注释中时才保留字符
+                if (!inSingleComment && !inMultiComment) {
+                    result += char;
+                }
+            }
+
+            return result;
+        }
+        // 7. 复制函数
+        function copyToClipboard(button) {
+            const code = button.nextElementSibling.querySelector('code');
+            const text = code.textContent;
+            // 去除 JSON 中的注释（支持单行和多行注释）
+            const cleanText = removeJsonComments(text);
+
+            navigator.clipboard.writeText(cleanText).then(() => {
+                button.textContent = '已复制!';
+                setTimeout(() => button.textContent = '复制', 2000);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家小助手</title>
+    <link rel="icon" href="{{contextPath}}/static/favicon.ico" type="image/x-icon">
+    <!--引入jQuery 文件-->
+    <!-- 引入条码生成库 -->
+    <script src="https://file.dianplus.cn/assets/jquery/jquery-3.1.1.min.js"></script>
+    <script src="https://file.dianplus.cn/assets/jquery-barcode/jquery-barcode-2.0.2.min.js"></script>
+    <script src="https://file.dianplus.cn/assets/jquery-qrcode/jquery-qrcode.min.js"></script>
+    <script>
+        $(function () {
+            let json = {
+                rows: [
+                    { "type": "br" },
+                    {
+                        "type": "image",
+                        "style": {
+                            "align": "center",
+                            "width": 150,//像素
+                            "height": 150,//像素
+                        },
+                        "src": "https://file.dianplus.cn/assets/images/logo2.png",
+                        "imageMode": "bitImageColumn" //bitImageColumn 高清，不是所有机器都支持 bitImageRaster标准基本都支持
+                    },
+                    { "type": "br" },
+                    // {
+                    //     "type": "image_grid",
+                    //     "width": 44,//字数
+                    //     "style": { "align": "center", "spacing": 1 },
+                    //     "cells": [
+                    //         {
+                    //             "src": "https://file.dianplus.cn/assets/images/logo2.png", "width": 14, "align": "left"
+                    //         },
+                    //         {
+                    //             "src": "https://file.dianplus.cn/assets/images/logo2.png", "width": 14, "align": "center"
+                    //         },
+                    //         {
+                    //             "src": "https://file.dianplus.cn/assets/images/logo2.png", "width": 14, "align": "right"
+                    //         },
+                    //     ]
+                    // },
+                    // { "type": "br" },
+                    {
+                        "type": "text", "text": "店家小助手",
+                        "style": { "align": "center", "bold": true, "inverse_printing": false, "upside_down": false },
+                    },
+                    { "type": "br" },
+                    { "type": "text", "text": "地址: 某某市某某区某某路", "style": { "align": "center" } },
+                    { "type": "br" },
+                    { "type": "text", "text": "--------------------------------", "style": { "align": "center" } },
+                    { "type": "br" },
+                    {
+                        "type": "table",
+                        "width": 42,//字数
+                        "style": {
+                            "align": "center",
+                        },
+                        "header_style": {
+                            "font": "A",
+                            "bold": true,
+                            "underline": false,
+                            "double_height": true,
+                            "double_width": false,
+                            "align": "left",
+                            "split": {
+                                "bold": false,
+                                "char": "-",
+                                "shows": [false, true, false]
+                            }
+                        },
+                        "row_style": {
+                            "font": "A",
+                            "bold": false,
+                            "underline": false,
+                            "double_height": false,
+                            "double_width": false,
+                            "align": "left",
+                            "wrapBottom": false,
+                            "line_spacing": 5,
+                            "split": {
+                                "bold": false,
+                                "char": ".",
+                                "show": false
+                            }
+                        },
+                        "header_cell_styles": [
+                            {
+                                "width": 17,
+                                "align": "left"
+                            },
+                            {
+                                "width": 5,
+                            },
+                            {
+                                "width": 10
+                            },
+                            {
+                                "width": 10,
+                                "align": "right"
+                            }
+                        ],
+                        "row_cell_styles": [
+                            {
+                                "width": 17,
+                                "align": "left"
+                            },
+                            {
+                                "width": 5,
+                            },
+                            {
+                                "width": 10
+                            },
+                            {
+                                "width": 10,
+                                "align": "right"
+                            }
+                        ],
+                        "headers": ["品名", "数量", "价格", "总价"],
+                        "rows": [
+                            ["商品AA", "2", "0.00", "0.00"],
+                            ["Item 2", "2", "0.00", "0.00"],
+                            ["Item 3", "2", "0.00", "0.00"],
+                            ["Item 2", "2", "0.00", "0.00"],
+                            ["Item 3", "2", "0.00", "0.00"]
+                        ],
+                    },
+                    { "type": "br" },
+                    {
+                        "type": "text_grid",
+                        "width": 42,//字数
+                        "style": { "align": "center", "spacing": 2 },
+                        "cells": [
+                            {
+                                "text": "储值余额:888", "width": 20, "align": "left"
+                            },
+                            {
+                                "text": "折扣:88", "width": 20, "align": "right"
+                            }
+                        ]
+                    },
+                    { "type": "br" },
+                    {
+                        "type": "text_grid",
+                        "width": 42,//字数
+                        "style": { "align": "center" },
+                        "spacing": 2,
+                        "cells": [
+                            {
+                                "text": "会员:VIP11", "width": 20, "align": "left"
+                            },
+                            {
+                                "text": "合计:50.00", "width": 20, "align": "right"
+                            }
+                        ]
+                    },
+                    { "type": "br" },
+                    { "type": "text", "text": "感谢惠顾!", "style": { "align": "center" }, },
+                    { "type": "br" },
+                    { "type": "text", "text": "欢迎下次光临!", "style": { "align": "center" }, },
+                    { "type": "br" },
+                    { "type": "barcode", "code": "6912345678901", "style": { "align": "center" }, "width": 3, "format": "EAN13", "showText": true },
+                    { "type": "br" },
+                    { "type": "qrcode", "text": "http://www.example.com", "style": { "align": "center" }, "size": 6 },
+                    { "type": "br", "line_spacing": 80 },
+                    { "type": "cut" },
+                    { "type": "box" },
+                ]
+            }
+
+            const preview = () => {
+                try {
+                    json = JSON.parse($("#textarea").val());
+                    const htmls = [];
+                    json.rows.forEach(element => {
+                        try {
+                            if (element.type == "text") {
+                                htmls.push(`<div class="text" style="display: flex;justify-content:${element.style.align};font-weight: ${element.style.bold ? 'bold' : 'normal'};">${element.text.replace(/ /g, '&nbsp;')}</div>`);
+                            } else if (element.type == "image") {
+                                htmls.push(`<div class="text" style="display: flex;justify-content:${element.style.align};">
+                                <img src="${element.src}" style="width:${element.style.width / 1.67}px;"/>
+                                </div>`);
+                            } else if (element.type == "barcode") {
+                                $("#barcode").barcode(element.code, element.format.toLowerCase(), {
+                                });
+                                htmls.push(`<div class="text" style="display: flex;justify-content:${element.style.align};">
+                                    <div style="">
+                                        ${$("#barcode").html()}
+                                    </div>  
+                                </div>`);
+                                $("#barcode").html("");
+                            } else if (element.type == "qrcode") {
+                                $("#qrcode").qrcode({
+                                    render: "table",
+                                    text: element.text,
+                                    width: element.size * 17,
+                                    height: element.size * 17
+                                });
+                                htmls.push(`<div class="text" style="display: flex;justify-content:${element.style.align};">
+                                    ${$("#qrcode").html()}
+                                </div>`);
+                                $("#qrcode").html("");
+                            } else if (element.type == "br") {
+                                htmls.push(`<br/>`);
+                            } else if (element.type == "text_grid") {
+                                // ============ 两列预览代码 - 开始 ============
+                                // 左边文本左对齐 右边文本右对齐
+                                htmls.push(`<div class="text" style="display: flex;width:350px;justify-content:${element.style.align};}">`)
+                                htmls.push(`<div class="text" style="display: flex;width:${element.width * 1.8}mm;}">`);
+                                element.cells.forEach(function (item) {
+                                    htmls.push(`<div class="text" style="width:${100 * item.width / 42}%;display: flex;justify-content:${item.align};">${item.text.replace(/ /g, '&nbsp;')}</div>`);
+                                });
+                                htmls.push(`</div>`);
+                                htmls.push(`</div>`);
+                            } else if (element.type == "table") {
+                                // ============ 表格预览代码 - 开始 ============
+                                htmls.push(`<div style="text-align:${element.style.align || 'center'};">`);
+                                htmls.push(`<table style="width:${element.width * 1.8}mm; border-collapse: collapse; margin: 0 auto;">`);
+                                // 表头行
+                                htmls.push('<thead><tr>');
+                                element.headers.forEach(header => {
+                                    const headerStyle = element.header_style || {};
+                                    const style = `
+                                            font-weight: ${headerStyle.bold ? 'bold' : 'normal'};
+                                            text-decoration: ${headerStyle.underline ? 'underline' : 'none'};
+                                            font-size: ${headerStyle.double_height ? '1.2em' : '0.7em'};
+                                            ${headerStyle.double_width ? 'letter-spacing: 0.1em;' : ''}
+                                        `;
+                                    htmls.push(`<th style="${style} border: 0px solid #000; padding: 2px;">${header}</th>`);
+                                });
+                                htmls.push('</tr></thead>');
+
+                                // 数据行
+                                htmls.push('<tbody>');
+                                element.rows.forEach((row, rowIndex) => {
+                                    const rowStyle = element.row_style || {};
+                                    const style = `
+                                            font-weight: ${rowStyle.bold ? 'bold' : 'normal'};
+                                            text-decoration: ${rowStyle.underline ? 'underline' : 'none'};
+                                            font-size: ${rowStyle.double_height ? '1.5em' : '1em'};
+                                            ${rowStyle.double_width ? 'letter-spacing: 0.1em;' : ''}
+                                        `;
+                                    htmls.push('<tr>');
+                                    row.forEach(cell => {
+                                        htmls.push(`<td style="${style} border: 0px solid #000; padding: 2px;">${cell}</td>`);
+                                    });
+                                    htmls.push('</tr>');
+                                });
+                                htmls.push('</tbody>');
+
+                                htmls.push('</table></div>');
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+
+                    });
+                    const html = htmls.join("\n")
+                    console.log(html)
+                    $("#print_preview").html(html);
+                } catch (e) {
+                    json = {};
+                }
+            }
+            $("#textarea").val(JSON.stringify(json, null, 4));
+            preview();
+            $("#textarea").on("change", () => {
+                preview();
+            });
+            $("#productId").on("change", () => {
+                localStorage.productId = $("#productId").val();
+            });
+            $("#vendorId").on("change", () => {
+                localStorage.vendorId = $("#vendorId").val();
+            });
+            if (localStorage.vendorId) {
+                $("#vendorId").val(localStorage.vendorId);
+            }
+            if (localStorage.productId) {
+                $("#productId").val(localStorage.productId);
+            }
+            $('#printa').click(() => {
+                if (!localStorage.printName) {
+                    alert("请选择打印机");
+                    return;
+                }
+                //打印预览
+                $.ajax({
+                    url: '/direct_print',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        scripts: [JSON.parse($("#textarea").val())],
+                        options: {
+                            taskKey: new Date().getTime(), //可以使用业务的唯一标识，用于查询打印状态
+                            printerName: $("#printName").val(),//打印机名称可以通过调用printer_status接口获取Canon_TS3300_series
+                            printUnit: "mm",//支持单位 mm 毫米、inch 英寸、pt 颗粒、didot 印刷粒度
+                            printerType: 'ticket',
+                            printerCount: 1,//打印份数
+                            lineSpacing: 3, //行间距 单位点
+                            feedPaper: 1, //打印前走纸行数 1
+                            printSpeed: 2, //走纸速度 设置打印速度（1=慢速，2=中速，3=快速）
+                            printDensity: 10,//打印浓度（0-15）
+                            //macos 专用 可以通过system_profiler SPUSBDataType | grep -A 11 "Printer"查看
+                            vendorId: $("#vendorId").val(),
+                            productId: $("#productId").val(),
+                        }
+                    }),
+                    success: function (data) {
+                        alert('请求成功');
+                    },
+                    error: function (e) {
+                        alert(e.message);
+                    }
+                });
+            })
+            //获取打印机列表
+            $.ajax({
+                url: '/printer_status',
+                type: 'POST',
+                contentType: 'application/json',
+                success: function (data) {
+                    let html = "";
+                    data.resultObject.printerInfos.forEach(element => {
+                        html += `<option value = "${element.name}" ${localStorage.printName == element.name ? "selected" : ""}> ${element.name}</option >`;
+                    });
+                    $("#printName").html(html);
+                },
+                error: function (e) {
+                }
+            })
+            $("#printName").on("change", function (e) {
+                localStorage.printName = e.target.value;
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <!-- 字体样式 -->
+    <!-- 模版设计时使用:https://file.dianplus.cn/assets/fonts/*.ttf-->
+    <!-- 本地打印时使用:https://localhost.dianplus.cn:5443/static/fonts/*.ttf-->
+    <style>
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .header img {
+            width: 20mm;
+            /* 调整logo宽度以适应新的纸张宽度 */
+        }
+
+        /* 确保打印内容不会超出边界 */
+        .items,
+        .total,
+        .footer {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
+    <p id="printp"><a id="printa" href="#" style="padding: 5px;border: 1px #eee solid ;">打印</a>
+    </p>
+    <p>windows系统:<select id="printName" style="width:300px" placeholder="请选择打印机"></select>
+        请安装打印机对应的驱动即可
+    </p>
+    <p>macos系统: <input id="vendorId" style="width:100px" placeholder="厂商ID"></input>
+        <input id="productId" style="width:100px" placeholder="产品ID"></input>
+        使用USB连接打印机，在终端输入命令进行查看: system_profiler SPUSBDataType | grep -A 11 "Printer"
+    </p>
+    <div id="barcode">
+    </div>
+    <div id="qrcode">
+    </div>
+    <div style="display: flex;width: 1000px;">
+        <textarea id="textarea" style="width: 650px;height: 900px; background: #2d2d2d;color: #03fe5b;"></textarea>
+        <div id="print_preview" style="width: 350px; padding: 10px;border:1px #666 solid;">
+        </div>
+    </div>
+</body>
+
+</html>

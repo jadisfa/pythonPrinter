@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家小助手</title>
+    <link rel="icon" href="{{contextPath}}/static/favicon.ico" type="image/x-icon">
+    <!--引入jQuery 文件-->
+    <script src="https://file.dianplus.cn/assets/jquery/jquery-3.1.1.min.js"></script>
+    <script>
+        const textHtml1 = `
+<div>
+    <style>
+        div {
+            margin: 0;
+            font-family: "Resource Han Rounded CN", "楷体", "Kaiti SC", "STKaiti";
+        }
+    </style>
+    <div class="doubleRow_pages" id="doubleRow_pages"
+        style="display: flex; flex-wrap: wrap; width: 42mm; height: 70mm;overflow:hidden;">
+        <div class="doubleRow_page" id="doubleRow_page_0"
+            style="width: 40mm; height: 69mm;margin-left: 1mm; margin-top: 0px;border: 1px #000000 solid; ">
+            <div class="page" style="box-sizing: content-box; padding: 0mm 1mm;">
+                <div class="header"
+                    style="width: 38mm; height: 0mm; position: relative; left: 0px; top: 0px;">
+                </div>
+                <div class="body" style="position: relative; left: 0px;">
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 0mm;  font-size: 10pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap;  background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial; display: flex; align-items: center; justify-content: center;text-align: center;  width: 37.698mm; height: 7.408mm;">
+                            合格证
+                        </div>
+                    </div>
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 10mm;  font-size: 10pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap; background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial;  width: 37.698mm; height: 7.408mm;">
+                            测试文字:123456叠叠</div>
+                    </div>
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 20mm;  font-size: 6pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap; background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial;  width: 37.698mm; height: 7.408mm;">
+                            测试小文字:123456叠叠</div>
+                    </div>
+                    <div style="position: absolute; left: 0.215mm; top: 47.391mm;font-size: 10pt;">
+                        <div
+                            style="width: 38mm; height: 15.081mm; display: flex; justify-content: center;text-align:center;">
+                            <svg height="56.999055118110235" width="56.999055118110235" viewBox="0 0 21 21"
+                                errorCorrectionLevel="M">
+                                <path fill="#FFFFFF" d="M0,0 h21v21H0z" shape-rendering="crispEdges"></path>
+                                <path fill="#000000"
+                                    d="M0 0h7v1H0zM11 0h2v1H11zM14,0 h7v1H14zM0 1h1v1H0zM6 1h1v1H6zM10 1h1v1H10zM12 1h1v1H12zM14 1h1v1H14zM20,1 h1v1H20zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM10 2h3v1H10zM14 2h1v1H14zM16 2h3v1H16zM20,2 h1v1H20zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM8 3h1v1H8zM10 3h1v1H10zM12 3h1v1H12zM14 3h1v1H14zM16 3h3v1H16zM20,3 h1v1H20zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h2v1H8zM12 4h1v1H12zM14 4h1v1H14zM16 4h3v1H16zM20,4 h1v1H20zM0 5h1v1H0zM6 5h1v1H6zM9 5h1v1H9zM14 5h1v1H14zM20,5 h1v1H20zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1H10zM12 6h1v1H12zM14,6 h7v1H14zM12 7h1v1H12zM0 8h2v1H0zM5 8h3v1H5zM12 8h1v1H12zM16 8h2v1H16zM0 9h1v1H0zM2 9h2v1H2zM5 9h1v1H5zM15 9h1v1H15zM17 9h3v1H17zM3 10h2v1H3zM6 10h1v1H6zM14 10h5v1H14zM20,10 h1v1H20zM4 11h2v1H4zM9 11h1v1H9zM11 11h1v1H11zM14 11h1v1H14zM20,11 h1v1H20zM0 12h4v1H0zM5 12h2v1H5zM12 12h3v1H12zM16 12h3v1H16zM20,12 h1v1H20zM8 13h3v1H8zM13 13h2v1H13zM16 13h1v1H16zM20,13 h1v1H20zM0 14h7v1H0zM8 14h1v1H8zM11 14h1v1H11zM16 14h2v1H16zM19,14 h2v1H19zM0 15h1v1H0zM6 15h1v1H6zM8 15h3v1H8zM12 15h2v1H12zM15 15h3v1H15zM19 15h1v1H19zM0 16h1v1H0zM2 16h3v1H2zM6 16h1v1H6zM10 16h3v1H10zM14 16h1v1H14zM19,16 h2v1H19zM0 17h1v1H0zM2 17h3v1H2zM6 17h1v1H6zM9 17h1v1H9zM11 17h1v1H11zM13 17h1v1H13zM15 17h1v1H15zM0 18h1v1H0zM2 18h3v1H2zM6 18h1v1H6zM9 18h1v1H9zM11 18h1v1H11zM15 18h1v1H15zM17,18 h4v1H17zM0 19h1v1H0zM6 19h1v1H6zM8 19h1v1H8zM10 19h2v1H10zM14 19h3v1H14zM0 20h7v1H0zM8 20h1v1H8zM10 20h1v1H10zM13 20h2v1H13zM16 20h1v1H16zM19 20h1v1H19z"
+                                    shape-rendering="crispEdges"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 0.794mm; top: 28.434mm; font-size: 10pt;">
+                        <div
+                            style="width: 37.206mm; height: 14.287mm; display: flex; justify-content: center;text-align:center;">
+                            <svg class="" width="107px" height="54.19848818897638px" x="0px" y="0px"
+                                viewBox="0 0 107 54.19848818897638" xmlns="http://www.w3.org/2000/svg"
+                                version="1.1" style="transform: translate(0,0)">
+                                <rect x="0" y="0" width="107" height="54.19848818897638"
+                                    style="fill:#ffffff;">
+                                </rect>
+                                <g transform="translate(0, 0)" style="fill:#000000;">
+                                    <text text-anchor="start" x="0" y="54.19848818897638">6</text>
+                                </g>
+                                <g transform="translate(12, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="2" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="1.5" y="63.53182152230971"></text>
+                                </g>
+                                <g transform="translate(15, 0)" style="fill:#000000;">
+                                    <rect x="3" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="5" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="9" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="13" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="15" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="19" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="23" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="27" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="29" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="32" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="36" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="40" y="0" width="2" height="43.19848818897638"></rect>
+                                    <text text-anchor="middle" x="21" y="54.19848818897638">941487</text>
+                                </g>
+                                <g transform="translate(57, 0)" style="fill:#000000;">
+                                    <rect x="1" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="3" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="2.5" y="63.53182152230971"></text>
+                                </g>
+                                <g transform="translate(62, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="5" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="7" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="10" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="14" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="18" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="21" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="24" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="28" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="31" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="35" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="37" y="0" width="1" height="43.19848818897638"></rect>
+                                    <text text-anchor="middle" x="21" y="54.19848818897638">081226</text>
+                                </g>
+                                <g transform="translate(104, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="2" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="1.5" y="63.53182152230971"></text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`
+
+        const textHtml2 = `
+<div>
+    <style>
+        div {
+            margin: 0;
+            font-family: "Resource Han Rounded CN", "楷体", "Kaiti SC", "STKaiti";
+        }
+    </style>
+    <div class="doubleRow_pages" id="doubleRow_pages"
+        style="display: flex; flex-wrap: wrap; width: 86mm; height: 70mm;overflow:hidden;">
+        <div class="doubleRow_page" id="doubleRow_page_0"
+            style="width: 40mm; height: 69mm;margin-left: 1mm; margin-top: 0px;border: 1px #000000 solid; ">
+            <div class="page" style="box-sizing: content-box; padding: 0mm 1mm;">
+                <div class="header"
+                    style="width: 38mm; height: 0mm; position: relative; left: 0px; top: 0px;">
+                </div>
+                <div class="body" style="position: relative; left: 0px;">
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 0mm;  font-size: 10pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap;  background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial; display: flex; align-items: center; justify-content: center;text-align: center;  width: 37.698mm; height: 7.408mm;">
+                            合格证
+                        </div>
+                    </div>
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 10mm;  font-size: 10pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap; background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial;  width: 37.698mm; height: 7.408mm;">
+                            测试文字:123456叠叠</div>
+                    </div>
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 20mm;  font-size: 6pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap; background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial;  width: 37.698mm; height: 7.408mm;">
+                            测试小文字:123456叠叠</div>
+                    </div>
+                    <div style="position: absolute; left: 0.215mm; top: 47.391mm;font-size: 10pt;">
+                        <div
+                            style="width: 38mm; height: 15.081mm; display: flex; justify-content: center;text-align:center;">
+                            <svg height="56.999055118110235" width="56.999055118110235" viewBox="0 0 21 21"
+                                errorCorrectionLevel="M">
+                                <path fill="#FFFFFF" d="M0,0 h21v21H0z" shape-rendering="crispEdges"></path>
+                                <path fill="#000000"
+                                    d="M0 0h7v1H0zM11 0h2v1H11zM14,0 h7v1H14zM0 1h1v1H0zM6 1h1v1H6zM10 1h1v1H10zM12 1h1v1H12zM14 1h1v1H14zM20,1 h1v1H20zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM10 2h3v1H10zM14 2h1v1H14zM16 2h3v1H16zM20,2 h1v1H20zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM8 3h1v1H8zM10 3h1v1H10zM12 3h1v1H12zM14 3h1v1H14zM16 3h3v1H16zM20,3 h1v1H20zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h2v1H8zM12 4h1v1H12zM14 4h1v1H14zM16 4h3v1H16zM20,4 h1v1H20zM0 5h1v1H0zM6 5h1v1H6zM9 5h1v1H9zM14 5h1v1H14zM20,5 h1v1H20zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1H10zM12 6h1v1H12zM14,6 h7v1H14zM12 7h1v1H12zM0 8h2v1H0zM5 8h3v1H5zM12 8h1v1H12zM16 8h2v1H16zM0 9h1v1H0zM2 9h2v1H2zM5 9h1v1H5zM15 9h1v1H15zM17 9h3v1H17zM3 10h2v1H3zM6 10h1v1H6zM14 10h5v1H14zM20,10 h1v1H20zM4 11h2v1H4zM9 11h1v1H9zM11 11h1v1H11zM14 11h1v1H14zM20,11 h1v1H20zM0 12h4v1H0zM5 12h2v1H5zM12 12h3v1H12zM16 12h3v1H16zM20,12 h1v1H20zM8 13h3v1H8zM13 13h2v1H13zM16 13h1v1H16zM20,13 h1v1H20zM0 14h7v1H0zM8 14h1v1H8zM11 14h1v1H11zM16 14h2v1H16zM19,14 h2v1H19zM0 15h1v1H0zM6 15h1v1H6zM8 15h3v1H8zM12 15h2v1H12zM15 15h3v1H15zM19 15h1v1H19zM0 16h1v1H0zM2 16h3v1H2zM6 16h1v1H6zM10 16h3v1H10zM14 16h1v1H14zM19,16 h2v1H19zM0 17h1v1H0zM2 17h3v1H2zM6 17h1v1H6zM9 17h1v1H9zM11 17h1v1H11zM13 17h1v1H13zM15 17h1v1H15zM0 18h1v1H0zM2 18h3v1H2zM6 18h1v1H6zM9 18h1v1H9zM11 18h1v1H11zM15 18h1v1H15zM17,18 h4v1H17zM0 19h1v1H0zM6 19h1v1H6zM8 19h1v1H8zM10 19h2v1H10zM14 19h3v1H14zM0 20h7v1H0zM8 20h1v1H8zM10 20h1v1H10zM13 20h2v1H13zM16 20h1v1H16zM19 20h1v1H19z"
+                                    shape-rendering="crispEdges"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 0.794mm; top: 28.434mm; font-size: 10pt;">
+                        <div
+                            style="width: 37.206mm; height: 14.287mm; display: flex; justify-content: center;text-align:center;">
+                            <svg class="" width="107px" height="54.19848818897638px" x="0px" y="0px"
+                                viewBox="0 0 107 54.19848818897638" xmlns="http://www.w3.org/2000/svg"
+                                version="1.1" style="transform: translate(0,0)">
+                                <rect x="0" y="0" width="107" height="54.19848818897638"
+                                    style="fill:#ffffff;">
+                                </rect>
+                                <g transform="translate(0, 0)" style="fill:#000000;">
+                                    <text text-anchor="start" x="0" y="54.19848818897638">6</text>
+                                </g>
+                                <g transform="translate(12, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="2" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="1.5" y="63.53182152230971"></text>
+                                </g>
+                                <g transform="translate(15, 0)" style="fill:#000000;">
+                                    <rect x="3" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="5" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="9" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="13" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="15" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="19" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="23" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="27" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="29" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="32" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="36" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="40" y="0" width="2" height="43.19848818897638"></rect>
+                                    <text text-anchor="middle" x="21" y="54.19848818897638">941487</text>
+                                </g>
+                                <g transform="translate(57, 0)" style="fill:#000000;">
+                                    <rect x="1" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="3" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="2.5" y="63.53182152230971"></text>
+                                </g>
+                                <g transform="translate(62, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="5" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="7" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="10" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="14" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="18" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="21" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="24" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="28" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="31" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="35" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="37" y="0" width="1" height="43.19848818897638"></rect>
+                                    <text text-anchor="middle" x="21" y="54.19848818897638">081226</text>
+                                </g>
+                                <g transform="translate(104, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="2" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="1.5" y="63.53182152230971"></text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="doubleRow_page" id="doubleRow_page_0"
+            style="width: 40mm; height: 69mm;margin-left: 1mm; margin-top: 0px;border: 1px #000000 solid; ">
+            <div class="page" style="box-sizing: content-box; padding: 0mm 1mm;">
+                <div class="header"
+                    style="width: 38mm; height: 0mm; position: relative; left: 0px; top: 0px;">
+                </div>
+                <div class="body" style="position: relative; left: 0px;">
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 0mm;  font-size: 10pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap;  background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial; display: flex; align-items: center; justify-content: center;text-align: center;  width: 37.698mm; height: 7.408mm;">
+                            合格证
+                        </div>
+                    </div>
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 10mm;  font-size: 10pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap; background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial;  width: 37.698mm; height: 7.408mm;">
+                            测试文字:123456叠叠</div>
+                    </div>
+                    <div class="print_text"
+                        style="width: 37.698mm; height: 7.408mm; overflow: hidden; position: absolute; left: 0mm; top: 20mm;  font-size: 6pt; color: rgb(0, 0, 0); font-weight: bold; font-style: normal; text-indent: 0px; letter-spacing: 0px; word-spacing: 0px; white-space: nowrap; background: none 0px 0px / 100% no-repeat; border-width: initial; border-style: none; border-color: initial;">
+                        <div
+                            style="background: none; overflow-wrap: break-word; overflow: initial;  width: 37.698mm; height: 7.408mm;">
+                            测试小文字:123456叠叠</div>
+                    </div>
+                    <div style="position: absolute; left: 0.215mm; top: 47.391mm;font-size: 10pt;">
+                        <div
+                            style="width: 38mm; height: 15.081mm; display: flex; justify-content: center;text-align:center;">
+                            <svg height="56.999055118110235" width="56.999055118110235" viewBox="0 0 21 21"
+                                errorCorrectionLevel="M">
+                                <path fill="#FFFFFF" d="M0,0 h21v21H0z" shape-rendering="crispEdges"></path>
+                                <path fill="#000000"
+                                    d="M0 0h7v1H0zM11 0h2v1H11zM14,0 h7v1H14zM0 1h1v1H0zM6 1h1v1H6zM10 1h1v1H10zM12 1h1v1H12zM14 1h1v1H14zM20,1 h1v1H20zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM10 2h3v1H10zM14 2h1v1H14zM16 2h3v1H16zM20,2 h1v1H20zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM8 3h1v1H8zM10 3h1v1H10zM12 3h1v1H12zM14 3h1v1H14zM16 3h3v1H16zM20,3 h1v1H20zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h2v1H8zM12 4h1v1H12zM14 4h1v1H14zM16 4h3v1H16zM20,4 h1v1H20zM0 5h1v1H0zM6 5h1v1H6zM9 5h1v1H9zM14 5h1v1H14zM20,5 h1v1H20zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1H10zM12 6h1v1H12zM14,6 h7v1H14zM12 7h1v1H12zM0 8h2v1H0zM5 8h3v1H5zM12 8h1v1H12zM16 8h2v1H16zM0 9h1v1H0zM2 9h2v1H2zM5 9h1v1H5zM15 9h1v1H15zM17 9h3v1H17zM3 10h2v1H3zM6 10h1v1H6zM14 10h5v1H14zM20,10 h1v1H20zM4 11h2v1H4zM9 11h1v1H9zM11 11h1v1H11zM14 11h1v1H14zM20,11 h1v1H20zM0 12h4v1H0zM5 12h2v1H5zM12 12h3v1H12zM16 12h3v1H16zM20,12 h1v1H20zM8 13h3v1H8zM13 13h2v1H13zM16 13h1v1H16zM20,13 h1v1H20zM0 14h7v1H0zM8 14h1v1H8zM11 14h1v1H11zM16 14h2v1H16zM19,14 h2v1H19zM0 15h1v1H0zM6 15h1v1H6zM8 15h3v1H8zM12 15h2v1H12zM15 15h3v1H15zM19 15h1v1H19zM0 16h1v1H0zM2 16h3v1H2zM6 16h1v1H6zM10 16h3v1H10zM14 16h1v1H14zM19,16 h2v1H19zM0 17h1v1H0zM2 17h3v1H2zM6 17h1v1H6zM9 17h1v1H9zM11 17h1v1H11zM13 17h1v1H13zM15 17h1v1H15zM0 18h1v1H0zM2 18h3v1H2zM6 18h1v1H6zM9 18h1v1H9zM11 18h1v1H11zM15 18h1v1H15zM17,18 h4v1H17zM0 19h1v1H0zM6 19h1v1H6zM8 19h1v1H8zM10 19h2v1H10zM14 19h3v1H14zM0 20h7v1H0zM8 20h1v1H8zM10 20h1v1H10zM13 20h2v1H13zM16 20h1v1H16zM19 20h1v1H19z"
+                                    shape-rendering="crispEdges"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 0.794mm; top: 28.434mm; font-size: 10pt;">
+                        <div
+                            style="width: 37.206mm; height: 14.287mm; display: flex; justify-content: center;text-align:center;">
+                            <svg class="" width="107px" height="54.19848818897638px" x="0px" y="0px"
+                                viewBox="0 0 107 54.19848818897638" xmlns="http://www.w3.org/2000/svg"
+                                version="1.1" style="transform: translate(0,0)">
+                                <rect x="0" y="0" width="107" height="54.19848818897638"
+                                    style="fill:#ffffff;">
+                                </rect>
+                                <g transform="translate(0, 0)" style="fill:#000000;">
+                                    <text text-anchor="start" x="0" y="54.19848818897638">6</text>
+                                </g>
+                                <g transform="translate(12, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="2" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="1.5" y="63.53182152230971"></text>
+                                </g>
+                                <g transform="translate(15, 0)" style="fill:#000000;">
+                                    <rect x="3" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="5" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="9" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="13" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="15" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="19" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="23" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="27" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="29" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="32" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="36" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="40" y="0" width="2" height="43.19848818897638"></rect>
+                                    <text text-anchor="middle" x="21" y="54.19848818897638">941487</text>
+                                </g>
+                                <g transform="translate(57, 0)" style="fill:#000000;">
+                                    <rect x="1" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="3" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="2.5" y="63.53182152230971"></text>
+                                </g>
+                                <g transform="translate(62, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="3" height="43.19848818897638"></rect>
+                                    <rect x="5" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="7" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="10" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="14" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="18" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="21" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="24" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="28" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="31" y="0" width="2" height="43.19848818897638"></rect>
+                                    <rect x="35" y="0" width="1" height="43.19848818897638"></rect>
+                                    <rect x="37" y="0" width="1" height="43.19848818897638"></rect>
+                                    <text text-anchor="middle" x="21" y="54.19848818897638">081226</text>
+                                </g>
+                                <g transform="translate(104, 0)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="1" height="49.19848818897638"></rect>
+                                    <rect x="2" y="0" width="1" height="49.19848818897638"></rect>
+                                    <text text-anchor="middle" x="1.5" y="63.53182152230971"></text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`
+
+        $(function () {
+            $("#textarea1").val(textHtml1)
+            $("#textarea2").val(textHtml2)
+            $("#content1").html(textHtml1)
+            $("#content2").html(textHtml2)
+            $("#textarea1").on("change", function () {
+                $("#content1").html($(this).val())
+            })
+            $("#textarea2").on("change", function () {
+                $("#content2").html($(this).val())
+            })
+            $('#btnPreview1').click(() => {
+                //获取当前页所有的html内容
+                const html = $("#content1").html();
+                //获取内容的高度要求单位是mm的
+                var height = $('body').height() * 0.264583 + 15;
+                //打印预览
+                $.ajax({
+                    url: '/preview',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        contents: [encodeURIComponent(html)],
+                        options: {
+                            taskKey: new Date().getTime(), //可以使用业务的唯一标识，用于查询打印状态
+                            printUnit: "mm",//支持单位 mm 毫米、inch 英寸、pt 颗粒、didot 印刷粒度
+                            printerType: 'tag',
+                            printFullPage: true,
+                            zip: false,//true问开启压缩,content内容请使用gzip压缩
+                            pageRect: {
+                                width: 42, //纸张宽度 单位mm
+                                height: 74, //纸张宽度 单位mm
+                            },
+                            orientation: "portrait", // 页面方向 portrait纵向 landscape横向,默认为纵向
+                        }
+                    }),
+                    success: function (data) {
+                        alert('请求成功');
+                    },
+                    error: function (e) {
+                        alert(e.message);
+                    }
+                });
+            })
+            $('#btnPreview2').click(() => {
+                //获取当前页所有的html内容
+                const html = $("#content2").html();
+                //获取内容的高度要求单位是mm的
+                var height = $('body').height() * 0.264583 + 15;
+                //打印预览
+                $.ajax({
+                    url: '/preview',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        contents: [encodeURIComponent(html)],
+                        options: {
+                            taskKey: new Date().getTime(), //可以使用业务的唯一标识，用于查询打印状态
+                            printUnit: "mm",//支持单位 mm 毫米、inch 英寸、pt 颗粒、didot 印刷粒度
+                            printerType: 'tag',
+                            printFullPage: true,
+                            zip: false,//true问开启压缩,content内容请使用gzip压缩
+                            pageRect: {
+                                width: 86, //纸张宽度 单位mm
+                                height: 74, //纸张宽度 单位mm
+                            },
+                            margins: {
+                                left: 0, //纸张左边距 单位mm
+                                top: 0, //纸张顶边距 单位mm
+                                right: 0, //纸张右边距 单位mm
+                                bottom: 0, //纸张底边距 单位mm
+                            },
+                            // printCount: 3,//打印份数，默认为1
+                            orientation: "portrait", // 页面方向 portrait纵向 landscape横向,默认为纵向
+                            // duplex: "none",// 双面打印 none单面打印，auto双面打印，long长边翻转，short短边翻转
+                            // colorMode: "grayScale",// 打印颜色模式 GrayScale灰度模式，Color彩色模式，默认为灰度模式
+                            // pageScopes: {
+                            //     from: 1,//打印页码范围，默认为1
+                            //     to: 1
+                            // }
+                        }
+                    }),
+                    success: function (data) {
+                        alert('请求成功');
+                    },
+                    error: function (e) {
+                        alert(e.message);
+                    }
+                });
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <div class="button-container" style="padding: 10px;">
+        <button id="btnPreview1">打印单排</button>
+    </div>
+    <div style="display: flex;">
+        <textarea id="textarea1" style="width: 1200px;height: 400px; background: #2d2d2d;color: #03fe5b;"></textarea>
+        <div id="content1" class="content">
+
+        </div>
+    </div>
+    <div class="button-container" style="padding: 10px;">
+        <button id="btnPreview2">打印双排排</button>
+    </div>
+    <div style="display: flex;">
+        <textarea id="textarea2" style="width: 1200px;height: 400px; background: #2d2d2d;color: #03fe5b;"></textarea>
+        <div id="content2" class="content">
+
+        </div>
+    </div>
+
+
+</body>
+
+</html>

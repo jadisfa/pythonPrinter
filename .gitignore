@@ -1,0 +1,14 @@
+/未命名.pdf
+/dianplus_printer.egg-info/
+/dist/
+/build/
+/app.spec
+/__pycache__/
+*/**/__pycache__/
+*.spec
+.venv/*
+/app.log
+
+/output.wav
+/.idea/
+.vscode/launch.json

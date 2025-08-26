@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家小助手</title>
+    <link rel="icon" href="{{contextPath}}/static/favicon.ico" type="image/x-icon">
+    <!--引入jQuery 文件-->
+    <script src="https://file.dianplus.cn/assets/jquery/jquery-3.1.1.min.js"></script>
+    <script>
+        $(function () {
+            const svg = `<svg class="" width="209pt" height="65pt" x="0pt" y="0pt" viewBox="0 0 209 65"
+                                xmlns="http://www.w3.org/2000/svg" version="1.1" style="transform: translate(0,0)">
+                                <rect x="0" y="0" width="209" height="65" style="fill:#ffffff;"></rect>
+                                <g transform="translate(10, 10)" style="fill:#000000;">
+                                    <rect x="0" y="0" width="2" height="30"></rect>
+                                    <rect x="3" y="0" width="1" height="30"></rect>
+                                    <rect x="6" y="0" width="3" height="30"></rect>
+                                    <rect x="11" y="0" width="1" height="30"></rect>
+                                    <rect x="13" y="0" width="2" height="30"></rect>
+                                    <rect x="17" y="0" width="3" height="30"></rect>
+                                    <rect x="22" y="0" width="1" height="30"></rect>
+                                    <rect x="26" y="0" width="1" height="30"></rect>
+                                    <rect x="28" y="0" width="2" height="30"></rect>
+                                    <rect x="33" y="0" width="3" height="30"></rect>
+                                    <rect x="39" y="0" width="1" height="30"></rect>
+                                    <rect x="41" y="0" width="2" height="30"></rect>
+                                    <rect x="44" y="0" width="1" height="30"></rect>
+                                    <rect x="46" y="0" width="4" height="30"></rect>
+                                    <rect x="51" y="0" width="3" height="30"></rect>
+                                    <rect x="55" y="0" width="1" height="30"></rect>
+                                    <rect x="58" y="0" width="2" height="30"></rect>
+                                    <rect x="61" y="0" width="3" height="30"></rect>
+                                    <rect x="66" y="0" width="1" height="30"></rect>
+                                    <rect x="69" y="0" width="2" height="30"></rect>
+                                    <rect x="73" y="0" width="1" height="30"></rect>
+                                    <rect x="77" y="0" width="1" height="30"></rect>
+                                    <rect x="80" y="0" width="1" height="30"></rect>
+                                    <rect x="83" y="0" width="4" height="30"></rect>
+                                    <rect x="88" y="0" width="1" height="30"></rect>
+                                    <rect x="90" y="0" width="2" height="30"></rect>
+                                    <rect x="94" y="0" width="1" height="30"></rect>
+                                    <rect x="99" y="0" width="4" height="30"></rect>
+                                    <rect x="105" y="0" width="1" height="30"></rect>
+                                    <rect x="107" y="0" width="1" height="30"></rect>
+                                    <rect x="110" y="0" width="1" height="30"></rect>
+                                    <rect x="113" y="0" width="1" height="30"></rect>
+                                    <rect x="116" y="0" width="4" height="30"></rect>
+                                    <rect x="121" y="0" width="4" height="30"></rect>
+                                    <rect x="127" y="0" width="1" height="30"></rect>
+                                    <rect x="129" y="0" width="1" height="30"></rect>
+                                    <rect x="132" y="0" width="1" height="30"></rect>
+                                    <rect x="134" y="0" width="3" height="30"></rect>
+                                    <rect x="138" y="0" width="4" height="30"></rect>
+                                    <rect x="143" y="0" width="2" height="30"></rect>
+                                    <rect x="149" y="0" width="1" height="30"></rect>
+                                    <rect x="151" y="0" width="1" height="30"></rect>
+                                    <rect x="154" y="0" width="2" height="30"></rect>
+                                    <rect x="157" y="0" width="4" height="30"></rect>
+                                    <rect x="162" y="0" width="2" height="30"></rect>
+                                    <rect x="165" y="0" width="1" height="30"></rect>
+                                    <rect x="168" y="0" width="2" height="30"></rect>
+                                    <rect x="171" y="0" width="1" height="30"></rect>
+                                    <rect x="176" y="0" width="2" height="30"></rect>
+                                    <rect x="181" y="0" width="3" height="30"></rect>
+                                    <rect x="185" y="0" width="1" height="30"></rect>
+                                </g>
+                            </svg>`
+            // 旋转参数介绍
+            // 圆心 rotateOrigin:->中心点:center,左上角:top-left,左下角:bottom-left,右上角:top-right,右下角:bottom-right 不填默认为center
+            // 角度 rotate 浮点数 0-360
+            const json = {
+                unit: "mm",
+                labels: [
+                    // { "type": "image", "x": 2, "y": 2, "width": 4.4, "height": 3, "imagePath": "https://file.dianplus.cn/assets/images/logo.png", "rotateOrigin": "top-right", "rotate": -15 },
+                    {
+                        "type": "image", "x": 0, "y": 0, "width": 4.4, "height": 3,
+                        "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAfCAYAAAClDZ5ZAAAAAXNSR0IArs4c6QAAA9RJREFUWAntWEloFEEU/b+6h0mmYzSHiHhwV9xAVPDkKRlxJTMuiaBRPOhBPOlFPYh6UAQPXgSJngwiIrhMFDUxCaKCIBoV8SiC+xrQpHsymUx9f0+sdpzM0j0LErEY+PW3V/W6qn4Vg+CxUWNjpfVtcLNKIwFvqjoj7Ur/W1L3PHCvXk0QO6PykOAm9/86EVQTMoMNq0HiekCYTUTVgOj4VMwvqQPRLGVDwH5CeK30XJIR7xidkV25Ygr16XTokDDvPTlPkjYCUPKXBCPuu2gEVMVpc12Ecoh46S7Oe5Sw7j/dzl+YSYzuJoDkltFNYXj2OhHO/72fePEF7qkk0QqB2mjJCU7xJ6Cr5KhJQB2BxqrTwIfxXaAzciLXUFwIEJqafE5MTQ3h6dNxRy9hx6xvOMpwE4chMW50RXZkg9eZREp1ws/ZAh17cNN4k2IflY7fPt3g/mqll1ISYJjP7xwbkz/4AIvsREow8DyzPnTSJc5z/qotLmM9hXm/ENPgufxO5vLr6m5AFNc4vSxERNq8Rq36zxApemvxS+YRF+3DrpbSh59cxRUQVDQRPh+fje4r1wsYO5liBUO7QcLCTPnSKb3sRfRZdaHWTHGE9LZ4IpmQPdj4XqrjK2BNxhR1wbGT4zRWM79CCF5kJWI/JqP3n4XTB7DAHGe/LZ2GNMEKrl3n6Dk6Ph0++G5deZAjpGBXViLw/r0mZeJSPmR+JC8iyh9n4wzGk+W3IR9mIf7sREagYR8ifeHVmMQLkj8PsZdv4+9MdOoIqBSDrvv2SYofTzE5XTmErcl7ii1cVAaFRsscZ0pHgjDzT+hXAr/DOoyutg18i/fwhs14OFOw7YH3ByoDl03T/JJqT+/72y+9SLcpvb8+ZDnbmEhWdrTdVb506f4eIZoxnEw96SAZdZQ9UWtgZkZfGYyuifB2WhBdEZ4CmjjFr8zU4z5iWrwaD43bbY8AZWiEs0wG10Ts8WWcDhodVx/zjj2QYz5fNR9tpZWNtZJoZ464kro8EeFavi1aH242uiNHNIGb+dy8UrPhVUjwHxFtmu5f4h/jf2XGYhd43aqVv9zSExF7MhLobH9daG/F0oUX+fBP0/1iBoK+OFBh1DLBEOgJafYOdnJoXbknn4rvumqpJF4Vm/wx6+6THWYwfC4Ro8dCyL6Bgf5V/IRYLmNDTbwSfhVfjETSmoWggI1BQvKLJXvzTERBcX2fDpIO2npCqrPPUnVVYBHS6L7srkLyGJ63VhHzKmvqfyJl/bwFgOuA2kqVhyR/qD60tAz5Vmzg/7xK12RC9JUO7U+knzrgPpDGqCLHAAAAAElFTkSuQmCC",
+                        "rotateOrigin": "top-right", "rotate": -15, "position": "relative", "scaleType": "equalRate",
+                        "rect": {
+                            "x": 2,
+                            "y": 2,
+                            "width": 4,
+                            "height": 3,
+                            "display": true,
+                            "textAlign": "center",
+                            "verticalAlign": "middle"
+                        }
+                    },
+                    { "type": "text", "text": "合格证", "x": 14, "y": 1, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 4, "bold": true, "rotate": 180 },
+                    { "type": "line", "x1": 1, "y1": 5.8, "x2": 39, "y2": 5.8, "colorRgba": [0, 0, 0, 255], "border": 0.2, },
+                    {
+                        "type": "text", "text": "品牌：六六六", "x": 3, "y": 6, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3, "underline": true,
+                        "position": "relative",//position为relative时，x,y为绝对坐标，否则为相对坐标，rect的参数textAlign设置值后，x值失效 rect的参数verticalAlign设置值后，y值失效
+                        "rect": { //文字外矩形 设置rect后内容旋转会基于外矩形定位
+                            "x": 0, "y": 6, "width": 40, "height": 4,
+                            "display": true, "border": 1,
+                            "textAlign": "center", "verticalAlign": "bottom"   //标签参数position设置为relative时才生效 内容停靠textAlign: left center right verticalAlign:top bottom middle
+                        },
+                        "rotate": 5, "rotateOrigin": "bottom-left",
+                    },
+                    { "type": "text", "text": "品名：女裤", "x": 3, "y": 10, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3, "strikeOut": true },
+                    { "type": "text", "text": "附件：xxxxxxx", "x": 3, "y": 14, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3, "italic": true },
+                    { "type": "text", "text": "货号：GM61272S", "x": 3, "y": 18, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3, "overline": true },
+                    { "type": "text", "text": "号型：S/160", "x": 3, "y": 22, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    { "type": "text", "text": "颜色：黑色", "x": 3, "y": 26, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    { "type": "text", "text": "执行标准：%%%%%%", "x": 3, "y": 30, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    { "type": "text", "text": "安全类别：叠叠叠叠叠叠", "x": 3, "y": 34, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    { "type": "text", "text": "等级：S", "x": 3, "y": 38, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    { "type": "text", "text": "检验员：天", "x": 20, "y": 38, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    { "type": "text", "text": "成分：xxxxxxxxxx", "x": 3, "y": 42, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 3 },
+                    // 原生图片条码
+                    {
+                        "type": "barcode",//['Codabar', 'Code11', 'Code128', 'Code128Auto', 'EAN13', 'EAN5', 'EAN8', 'ECC200DataMatrix', 'Extended39', 'Extended93', 'FIM', 'I2of5', 'ISBN', 'MSI', 'POSTNET', 'Standard39', 'Standard93', 'UPCA', 'USPS_4State']
+                        "barcodeType": "EAN13", // 条码类型:"ean8", "ean8-guard" "ean13" "ean13-guard" "ean" "gtin" "ean14" "jan" "upc" "upca" "isbn" "isbn13" "gs1" "isbn10" "issn" "code39" pzn" "code128" "itf" "gs1_128" "codabar" "nw-7"
+                        "format": "svg",// 条码格式 image/svg 默认 svg 
+                        "x": 0, "y": 0, "fontSize": 2,
+                        "rotate": 0,
+                        "position": "relative",
+                        "rect": { //条码外矩形 
+                            "x": 0, "y": 49, "width": 40, "height": 8, "border": 1,
+                            "textAlign": "center", "verticalAlign": "top"   // 内容停靠textAlign: left center right verticalAlign:top bottom middle
+                        },
+                        "moduleWidth": 0.25, "moduleHeight": 8,// xy容器坐标，width,height容器宽高，moduleWidth,moduleHeight条码线条宽高
+                        "text": "6936353432531", "showText": true,//  条码内容 是否显示文字 注意图片模式不支持直接显示文本
+                    },
+                    { "type": "rect", "x": 2, "y": 46, "width": 36, "height": 11.3, "colorRgba": [0, 0, 0, 128], "border": 0.2 },
+                    { "type": "text", "text": "(不含辅料及拼接线)", "x": 11.2, "y": 46, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 2, "bold": true },
+                    { "type": "text", "text": "单价：699.00", "x": 14, "y": 57, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 2 },
+                    { "type": "text", "text": "广州XXXX供应链管理有限公司", "x": 3, "y": 60, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 2 },
+                    { "type": "text", "text": "广州市XXXXXXX道中666号803", "x": 3, "y": 63, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 2 },
+                    { "type": "text", "text": "房C348室 电话:18000000083", "x": 3, "y": 66, "fontFamilys": ["Microsoft YaHei", "Arial"], "fontSize": 2 },
+                    // 外部SVG
+                    // { "type": "svg", "x": 3.5, "y": 47, "width": 34, "height": 12, "svgData": svg },
+                    // 原生二维码
+                    // {
+                    //     "type": "qrcode",
+                    //     "format": "svg",// 格式 svg 目前仅支持svg
+                    //     "text": "https://file.dianplus.cn/assets/images/logo.png",
+                    //     "x": 5,           //x坐标(mm或px)
+                    //     "y": 20,          // y坐标(mm或px)
+                    //     "size": 30,       // 二维码尺寸(mm或px)
+                    //     "logoPath": "https://file.dianplus.cn/assets/images/logo.png",
+                    //     "colorRgba": [0, 0, 0, 255],// 前景色RGBA
+                    //     "fillColorRgba": [255, 255, 255, 255] // 背景色RGBA
+                    // },
+                ]
+            }
+            $("#textarea").val(JSON.stringify(json, null, 4));
+            $('#printa').click(() => {
+                //打印预览
+                $.ajax({
+                    url: '/preview',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        scripts: [JSON.parse($("#textarea").val())],
+                        options: {
+                            taskKey: new Date().getTime(), //可以使用业务的唯一标识，用于查询打印状态
+                            //printerName:"HP_LaserJet_400_M401dne__AFFC44_",//打印机名称可以通过调用printer_status接口获取
+                            printMode: 'lowDpiPrinter',//低精度打印机优化模式，有些打印机太差，可以使用这个模式
+                            printUnit: "mm",//支持单位 mm 毫米、inch 英寸、pt 颗粒、didot 印刷粒度
+                            printerType: 'tag',
+                            pageRect: {
+                                width: 40, //纸张宽度 单位mm
+                                height: 70, //纸张宽度 单位mm
+                            },
+                            margins: {
+                                left: 0, //纸张左边距 单位mm
+                                top: 0, //纸张顶边距 单位mm
+                                right: 0, //纸张右边距 单位mm
+                                bottom: 0, //纸张底边距 单位mm
+                            },
+                            printFullPage: true,
+                            // printCount: 3,//打印份数，默认为1
+                            // contentOrientation: "landscape", // 内容方向 portrait纵向 landscape横向,默认为纵向
+                            orientation: "portrait", // 页面方向 portrait纵向 landscape横向,默认为纵向
+                            // duplex: "none",// 双面打印 none单面打印，auto双面打印，long长边翻转，short短边翻转
+                            // colorMode: "grayScale",// 打印颜色模式 GrayScale灰度模式，Color彩色模式，默认为灰度模式
+                            // pageScopes: {
+                            //     from: 1,//打印页码范围，默认为1
+                            //     to: 1
+                            // }
+                        }
+                    }),
+                    success: function (data) {
+                        alert('请求成功');
+                    },
+                    error: function (e) {
+                        alert(e.message);
+                    }
+                });
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <a id="printa" href="#" style="padding: 5px;border: 1px #eee solid ;">打印</a>
+    <div style="display: flex;width: 1000px;">
+        <textarea id="textarea" style="width: 700px;height: 800px; background: #2d2d2d;color: #03fe5b;"></textarea>
+        <div style="width: 300px;height: 800px;background: #cbcbcb;border: 1px #171717 solid;
+         display: flex;          /* 启用 Flex 布局 */
+        justify-content: center; /* 水平居中 */
+        align-items: center;     /* 垂直居中 */
+    ">
+            <img src=" https://file.dianplus.cn/assets/images/tagDemo.png" style="width: 80mm;border: 1px solid #666;">
+        </div>
+    </div>
+</body>
+
+</html>

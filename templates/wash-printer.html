@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家小助手</title>
+    <link rel="icon" href="{{contextPath}}/static/favicon.ico" type="image/x-icon">
+    <!--引入jQuery 文件-->
+    <script src="https://file.dianplus.cn/assets/jquery/jquery-3.1.1.min.js"></script>
+    <script>
+        $(function () {
+            const json = {
+                unit: "mm",
+                labels: [
+                    {
+                        type: "text",
+                        text: "字体名:UNIFY TEXTILE CARE",
+                        fontSize: 3,
+                        x: 1,
+                        y: 0,
+                    }
+                ]
+            }
+            for (let i = 0; i < 26; i++) {
+                //26个小写字母
+                json.labels.push({
+                    text: String.fromCharCode(65 + i) + "=",
+                    type: "text",
+                    fontSize: 3,
+                    y: i * 4 + 5,
+                    x: 3
+                })
+                json.labels.push({
+                    text: String.fromCharCode(65 + i),
+                    type: "text",
+                    fontSize: 3,
+                    fontFamilys: ["UNIFY TEXTILE CARE"],
+                    y: i * 4 + 5,
+                    x: 3 + 6
+                })
+
+                //26个大写字母
+                json.labels.push({
+                    text: String.fromCharCode(97 + i) + "=",
+                    type: "text",
+                    fontSize: 3,
+                    y: i * 4 + 5,
+                    x: 15
+                })
+                json.labels.push({
+                    text: String.fromCharCode(97 + i),
+                    type: "text",
+                    fontSize: 3,
+                    fontFamilys: ["UNIFY TEXTILE CARE"],
+                    y: i * 4 + 5,
+                    x: 15 + 6
+                })
+
+            }
+            $("#textarea").val(JSON.stringify(json, null, 4));
+            $('#printa').click(() => {
+                //获取当前页所有的html内容
+                const html = document.documentElement.outerHTML;
+
+                //获取内容的高度要求单位是mm的
+                var height = $('body').height() * 0.264583 + 15;
+
+                //打印预览
+                $.ajax({
+                    url: '/preview',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        scripts: [JSON.parse($("#textarea").val())],
+                        options: {
+                            taskKey: new Date().getTime(), //可以使用业务的唯一标识，用于查询打印状态
+                            //printerName:"HP_LaserJet_400_M401dne__AFFC44_",//打印机名称可以通过调用printer_status接口获取
+                            printMode: 'lowDpiPrinter',//低精度打印机优化模式，有些打印机太差，可以使用这个模式
+                            printUnit: "mm",//支持单位 mm 毫米、inch 英寸、pt 颗粒、didot 印刷粒度
+                            printerType: 'tag',
+                            pageRect: {
+                                width: 45, //纸张宽度 单位mm
+                                height: 110, //纸张宽度 单位mm
+                            },
+                            margins: {
+                                left: 0, //纸张左边距 单位mm
+                                top: 0, //纸张顶边距 单位mm
+                                right: 0, //纸张右边距 单位mm
+                                bottom: 0, //纸张底边距 单位mm
+                            },
+                            printFullPage: true,
+                            // printCount: 3,//打印份数，默认为1
+                            // contentOrientation: "landscape", // 内容方向 portrait纵向 landscape横向,默认为纵向
+                            orientation: "portrait", // 页面方向 portrait纵向 landscape横向,默认为纵向
+                            // duplex: "none",// 双面打印 none单面打印，auto双面打印，long长边翻转，short短边翻转
+                            // colorMode: "grayScale",// 打印颜色模式 GrayScale灰度模式，Color彩色模式，默认为灰度模式
+                            // pageScopes: {
+                            //     from: 1,//打印页码范围，默认为1
+                            //     to: 1
+                            // }
+                        }
+                    }),
+                    success: function (data) {
+                        alert('请求成功');
+                    },
+                    error: function (e) {
+                        alert(e.message);
+                    }
+                });
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <a id="printa" href="#" style="padding: 5px;border: 1px #eee solid ;">打印</a>
+    <div style="display: flex;width: 800px;">
+        <textarea id="textarea" style="width: 500px;height: 800px; background: #2d2d2d;color: #03fe5b;"></textarea>
+        <img src="https://file.dianplus.cn/assets/images/wash-table.png" style="width: 300px;">
+    </div>
+</body>
+
+</html>

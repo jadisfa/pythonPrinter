@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家小助手</title>
+    <link rel="icon" href="{{contextPath}}/static/favicon.ico" type="image/x-icon">
+    <!--引入jQuery 文件-->
+    <script src="https://file.dianplus.cn/assets/jquery/jquery-3.1.1.min.js"></script>
+    <script>
+        $(function () {
+            $('#printa').click(() => {
+                $('#printp').hide();
+                //获取当前页所有的html内容
+                const html = document.documentElement.outerHTML;
+                //获取内容的高度要求单位是mm的
+                var height = $('body').height() * 0.264583 + 15;
+                //打印预览
+                $.ajax({
+                    url: '/export_pdf',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        contents: [encodeURIComponent(html), encodeURIComponent(html)],
+                        options: {
+                            taskKey: new Date().getTime(), //可以使用业务的唯一标识，用于查询打印状态
+                            //printerName:"HP_LaserJet_400_M401dne__AFFC44_",//打印机名称可以通过调用printer_status接口获取
+                            printUnit: "mm",//支持单位 mm 毫米、inch 英寸、pt 颗粒、didot 印刷粒度
+                            pageRect: {
+                                width: 80, //纸张宽度 单位mm
+                                height: height, //纸张宽度 单位mm
+                            },
+                            margins: {
+                                left: 0, //纸张左边距 单位mm
+                                top: 0, //纸张顶边距 单位mm
+                                right: 0, //纸张右边距 单位mm
+                                bottom: 0, //纸张底边距 单位mm
+                            },
+                            // printCount: 3,//打印份数，默认为1
+                            orientation: "portrait", // 页面方向 portrait纵向 landscape横向,默认为纵向
+                            // duplex: "none",// 双面打印 none单面打印，auto双面打印，long长边翻转，short短边翻转
+                            // colorMode: "grayScale",// 打印颜色模式 GrayScale灰度模式，Color彩色模式，默认为灰度模式
+                            // pageScopes: {
+                            //     from: 1,//打印页码范围，默认为1
+                            //     to: 1
+                            // }
+                        }
+                    }),
+                    success: function (data) {
+                        $('#printp').show();
+                        const base64Data = data.resultObject;
+
+                        // 解码 Base64 为二进制字节流
+                        const byteCharacters = atob(base64Data);
+                        const byteNumbers = new Uint8Array(byteCharacters.length);
+                        for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        }
+                        const blob = new Blob([byteNumbers.buffer], { type: 'application/pdf' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'output.pdf'; // 设置文件名
+                        document.body.appendChild(link);
+                        link.click();
+                        // 清理
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    },
+                    error: function (e) {
+                        $('#printp').show();
+                        alert(e.message);
+                    }
+                });
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <!-- 字体样式 -->
+    <!-- 模版设计时使用:https://file.dianplus.cn/assets/fonts/*.ttf-->
+    <!-- 本地打印时使用:https://localhost.dianplus.cn:5443/static/fonts/*.ttf-->
+    <style>
+        body {
+            font-family: "楷体", "Kaiti SC", "STKaiti";
+            font-size: 12px;
+            font-weight: bold;
+            width: 76mm;
+            padding: 5mm;
+            /* 上下左右都保持10mm的留白 */
+            box-sizing: border-box;
+            /* 确保宽度包括内边距和边框 */
+            border: #000000 solid 1px;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .header img {
+            width: 20mm;
+            /* 调整logo宽度以适应新的纸张宽度 */
+        }
+
+        /* 确保打印内容不会超出边界 */
+        .items,
+        .total,
+        .footer {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
+    <div class="header">
+        <p style="text-align: center;"><img src="https://mugua-file.oss-cn-hangzhou.aliyuncs.com/assets/images/logo.png"
+                alt="Logo" class="header img"></p>
+        <p>店家小助手</p>
+        <p>地址: 某某市某某区某某路</p>
+        <p>电话: 1234567890</p>
+        <hr>
+    </div>
+    <div class="items">
+        <div class="item">
+            <span>商品名称</span>
+            <span>数量</span>
+            <span>单价</span>
+            <span>总价</span>
+        </div>
+        <div class="item">
+            <span>商品A</span>
+            <span>2</span>
+            <span>10.00</span>
+            <span>20.00</span>
+        </div>
+        <div class="item">
+            <span>商品B</span>
+            <span>1</span>
+            <span>15.00</span>
+            <span>15.00</span>
+        </div>
+        <div class="item">
+            <span>商品C</span>
+            <span>3</span>
+            <span>5.00</span>
+            <span>15.00</span>
+        </div>
+        <div class="item">
+            <span>商品A</span>
+            <span>2</span>
+            <span>10.00</span>
+            <span>20.00</span>
+        </div>
+        <div class="item">
+            <span>商品B</span>
+            <span>1</span>
+            <span>15.00</span>
+            <span>15.00</span>
+        </div>
+        <div class="item">
+            <span>商品C</span>
+            <span>3</span>
+            <span>5.00</span>
+            <span>15.00</span>
+        </div>
+    </div>
+    <div class="total">
+        <p>合计: 50.00</p>
+    </div>
+    <div class="footer">
+        <p>感谢惠顾!</p>
+        <p>欢迎下次光临!</p>
+        <svg class="" width="127px" height="62px" x="0px" y="0px" viewBox="0 0 127 62"
+            xmlns="http://www.w3.org/2000/svg" version="1.1" style="transform: translate(0,0)">
+            <rect x="0" y="0" width="127" height="62" style="fill:#ffffff;"></rect>
+            <g transform="translate(10, 10)" style="fill:#000000;"><text style="font: 10px puhui95" text-anchor="start"
+                    x="0" y="42">6</text></g>
+            <g transform="translate(22, 10)" style="fill:#000000;">
+                <rect x="0" y="0" width="1" height="37"></rect>
+                <rect x="2" y="0" width="1" height="37"></rect><text style="font: 20px puhui95" text-anchor="middle"
+                    x="1.5" y="59"></text>
+            </g>
+            <g transform="translate(25, 10)" style="fill:#000000;">
+                <rect x="3" y="0" width="1" height="30"></rect>
+                <rect x="5" y="0" width="2" height="30"></rect>
+                <rect x="8" y="0" width="1" height="30"></rect>
+                <rect x="11" y="0" width="3" height="30"></rect>
+                <rect x="15" y="0" width="2" height="30"></rect>
+                <rect x="19" y="0" width="2" height="30"></rect>
+                <rect x="22" y="0" width="2" height="30"></rect>
+                <rect x="26" y="0" width="2" height="30"></rect>
+                <rect x="30" y="0" width="2" height="30"></rect>
+                <rect x="34" y="0" width="1" height="30"></rect>
+                <rect x="37" y="0" width="2" height="30"></rect>
+                <rect x="41" y="0" width="1" height="30"></rect><text style="font: 10px puhui95" text-anchor="middle"
+                    x="21" y="42">901111</text>
+            </g>
+            <g transform="translate(67, 10)" style="fill:#000000;">
+                <rect x="1" y="0" width="1" height="37"></rect>
+                <rect x="3" y="0" width="1" height="37"></rect><text style="font: 20px puhui95" text-anchor="middle"
+                    x="2.5" y="59"></text>
+            </g>
+            <g transform="translate(72, 10)" style="fill:#000000;">
+                <rect x="0" y="0" width="2" height="30"></rect>
+                <rect x="4" y="0" width="2" height="30"></rect>
+                <rect x="7" y="0" width="2" height="30"></rect>
+                <rect x="11" y="0" width="2" height="30"></rect>
+                <rect x="14" y="0" width="2" height="30"></rect>
+                <rect x="18" y="0" width="2" height="30"></rect>
+                <rect x="21" y="0" width="2" height="30"></rect>
+                <rect x="25" y="0" width="2" height="30"></rect>
+                <rect x="28" y="0" width="2" height="30"></rect>
+                <rect x="32" y="0" width="2" height="30"></rect>
+                <rect x="35" y="0" width="1" height="30"></rect>
+                <rect x="38" y="0" width="1" height="30"></rect><text style="font: 10px puhui95" text-anchor="middle"
+                    x="21" y="42">111118</text>
+            </g>
+            <g transform="translate(114, 10)" style="fill:#000000;">
+                <rect x="0" y="0" width="1" height="37"></rect>
+                <rect x="2" y="0" width="1" height="37"></rect><text style="font: 20px puhui95" text-anchor="middle"
+                    x="1.5" y="59"></text>
+            </g>
+        </svg>
+    </div>
+    <p style="text-align: right;" id="printp"><a id="printa" href="#">导出</a></p>
+</body>
+
+</html>
