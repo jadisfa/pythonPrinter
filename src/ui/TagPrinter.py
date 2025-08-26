@@ -335,8 +335,9 @@ class TagPrinter():
         flags |= Qt.TextFlag.TextWordWrap  # 启用自动换行
         
         if autoSize:
-            min_font_size_mm = 1.5 # 设置最小字体大小为 1.5mm
-            min_font_size_px = max(1, int(min_font_size_mm * self.mm_to_px))  # 转换为像素
+            # 优化：提高最小字体大小，避免过度缩小
+            min_font_size_mm = 3.0  # 提高最小字体大小到 3.0mm
+            min_font_size_px = max(8, int(min_font_size_mm * self.mm_to_px))  # 转换为像素，最小8px
             font = painter.font()
             original_font_size = font.pixelSize()
             current_font_size = original_font_size
@@ -346,75 +347,78 @@ class TagPrinter():
             font.setPixelSize(int(round(current_font_size)))
             painter.setFont(font)
             fm = painter.fontMetrics()
-            line_height = fm.lineSpacing()
+            
+            # 优化：使用更合理的行高计算
+            line_height = fm.height() + 2  # 使用 height() 而不是 lineSpacing()，并添加2px间距
 
             # 尝试找到合适的字号
             while current_font_size >= min_font_size_px:
                 font.setPixelSize(int(round(current_font_size)))
                 painter.setFont(font)
-                fm = painter.fontMetrics()  # 更新 fm
-                line_height = fm.lineSpacing()
+                fm = painter.fontMetrics()
+                
+                # 优化：动态计算行高，避免固定行高导致的问题
+                line_height = fm.height() + 2
 
-                # 新增：先判断原始文本宽度是否超过容器宽度
-                raw_text_width = 0
-                for natural_line in natural_lines:
-                    raw_line_width = fm.horizontalAdvance(natural_line)
-                    if raw_line_width > raw_text_width:
-                        raw_text_width = raw_line_width
-
+                # 检查宽度适配性
                 fits_width = True
-
-                # 如果原始文本宽度大于容器宽度，则不满足
-                if raw_text_width > rectW:
-                    fits_width = False
-                else:
-                    # 再检查换行后的每一行是否适配
-                    for natural_line in natural_lines:
-                        sub_lines = self.wrapText(natural_line, rectW, painter)
-                        for line in sub_lines:
-                            if fm.horizontalAdvance(line) > rectW * 1.03:
-                                fits_width = False
-                                break
-                        if not fits_width:
-                            break
+                for natural_line in natural_lines:
+                    if fm.horizontalAdvance(natural_line) > rectW * 1.02:  # 允许2%的误差
+                        fits_width = False
+                        break
 
                 if not fits_width:
-                    current_font_size -= 0.25
+                    current_font_size -= 1  # 每次减少1px，避免过度缩小
                     continue
 
-                # 检查总高度是否适配
-                total_height = len(natural_lines) * line_height
+                # 优化：更精确的高度计算
+                # 计算实际需要的行数，而不是简单乘以行数
+                total_height = 0
+                for natural_line in natural_lines:
+                    # 使用改进的换行逻辑
+                    sub_lines = self.wrapTextOptimized(natural_line, rectW, painter)
+                    total_height += len(sub_lines) * line_height
+                
                 if total_height <= rectH:
                     break  # 宽高都适配成功
                 else:
-                    current_font_size -= 0.25  # 高度不够，继续缩小
+                    current_font_size -= 1  # 每次减少1px
 
-            # ⭐️ 特别注意：如果循环结束后仍未找到合适字号，强制使用最小字号
+            # 应用最终字号
             final_font_size = max(current_font_size, min_font_size_px)
-
-            # ⭐️ 兜底：如果最终字号仍然小于最小字号，设为最小字号
-            if final_font_size < min_font_size_px:
-                final_font_size = min_font_size_px
-            # font.setPixelSize(13.5)
-            font.setPixelSize(max(round(final_font_size), 1.5))
+            font.setPixelSize(max(round(final_font_size), min_font_size_px))
             painter.setFont(font)
 
-            # 重新获取字体度量（因为字体已改变）
+            # 重新获取字体度量
             fm = painter.fontMetrics()
-            line_height = fm.lineSpacing()
+            line_height = fm.height() + 2
 
-            # 重新换行并裁剪超出内容
+            # 优化：智能换行和高度控制
             wrapped_lines = []
             total_height = 0
+            available_height = rectH
+            
             for natural_line in natural_lines:
-                sub_lines = self.wrapText(natural_line, rectW, painter)
+                sub_lines = self.wrapTextOptimized(natural_line, rectW, painter)
                 for line in sub_lines:
-                    if total_height + line_height > rectH:
-                        break  # 超出高度，停止添加
-                    wrapped_lines.append(line)
-                    total_height += line_height
-                if total_height + line_height > rectH:
-                    break  # 总高度已超限，跳出外层循环
+                    # 检查添加当前行是否会超出高度
+                    if total_height + line_height <= available_height:
+                        wrapped_lines.append(line)
+                        total_height += line_height
+                    else:
+                        # 如果高度不够，尝试压缩行间距
+                        if len(wrapped_lines) > 0:
+                            # 重新计算压缩后的行间距
+                            compressed_line_height = available_height / len(wrapped_lines)
+                            if compressed_line_height >= line_height * 0.8:  # 允许压缩到80%
+                                # 使用压缩后的行间距重新计算
+                                total_height = len(wrapped_lines) * compressed_line_height
+                                if total_height + line_height <= available_height:
+                                    wrapped_lines.append(line)
+                                    total_height += line_height
+                        break
+                if total_height >= available_height:
+                    break
 
             wrapped_text = "\n".join(wrapped_lines)
         else:
@@ -503,16 +507,27 @@ class TagPrinter():
         # 计算总高度
         total_height = len(lines) * line_height
         
-        # 垂直对齐计算
+        # 优化：更智能的垂直对齐计算
         start_y = textRect.y()
         rectVerticalAlign = rect.get("verticalAlign", "top")
         
         if rectVerticalAlign == "middle":
-            start_y = textRect.y() + (textRect.height() - total_height) / 2
+            # 居中对齐：考虑实际文本高度和容器高度的差异
+            available_space = textRect.height() - total_height
+            if available_space > 0:
+                start_y = textRect.y() + available_space / 2
+            else:
+                start_y = textRect.y()  # 如果文本超出容器，从顶部开始
         elif rectVerticalAlign == "bottom":
-            start_y = textRect.y() + textRect.height() - total_height
+            # 底部对齐：确保文本不会超出容器底部
+            if total_height <= textRect.height():
+                start_y = textRect.y() + textRect.height() - total_height
+            else:
+                start_y = textRect.y()  # 如果文本超出容器，从顶部开始
+        else:  # top
+            start_y = textRect.y()
         
-        # 确保起始Y位置不会小于文本区域顶部
+        # 确保起始Y位置在有效范围内
         start_y = max(start_y, textRect.y())
         
         # 绘制每一行
@@ -1197,6 +1212,82 @@ class TagPrinter():
             wrapped_lines.append(current_line)
         
         return wrapped_lines
+    
+    # 优化的文字自动换行方法
+    def wrapTextOptimized(self, text, max_width, painter):
+        """优化的换行方法，避免产生过多的短行"""
+        fm = QFontMetricsF(painter.font())
+        wrapped_lines = []
+        
+        # 如果文本本身就很短，直接返回
+        if fm.horizontalAdvance(text) <= max_width:
+            return [text]
+        
+        # 尝试按空格分割，优先在空格处换行
+        words = text.split()
+        if len(words) > 1:
+            current_line = ""
+            current_width = 0
+            
+            for word in words:
+                word_width = fm.horizontalAdvance(word)
+                space_width = fm.horizontalAdvance(" ")
+                
+                # 检查添加当前单词是否会超出宽度
+                if current_width + word_width + (space_width if current_line else 0) <= max_width:
+                    if current_line:
+                        current_line += " " + word
+                        current_width += space_width + word_width
+                    else:
+                        current_line = word
+                        current_width = word_width
+                else:
+                    # 当前行已满，保存并开始新行
+                    if current_line:
+                        wrapped_lines.append(current_line)
+                        current_line = word
+                        current_width = word_width
+                    else:
+                        # 单个单词就超出宽度，需要按字符分割
+                        wrapped_lines.extend(self._splitLongWord(word, max_width, fm))
+                        current_line = ""
+                        current_width = 0
+            
+            # 添加最后一行
+            if current_line:
+                wrapped_lines.append(current_line)
+        else:
+            # 没有空格，按字符分割
+            wrapped_lines = self._splitLongWord(text, max_width, fm)
+        
+        return wrapped_lines
+    
+    def _splitLongWord(self, word, max_width, fm):
+        """分割过长的单词"""
+        wrapped_lines = []
+        current_line = ""
+        current_width = 0
+        
+        for char in word:
+            char_width = fm.horizontalAdvance(char)
+            if current_width + char_width <= max_width:
+                current_line += char
+                current_width += char_width
+            else:
+                if current_line:
+                    wrapped_lines.append(current_line)
+                    current_line = char
+                    current_width = char_width
+                else:
+                    # 单个字符就超出宽度，强制添加
+                    wrapped_lines.append(char)
+                    current_line = ""
+                    current_width = 0
+        
+        if current_line:
+            wrapped_lines.append(current_line)
+        
+        return wrapped_lines
      # 文本截断处理
     def textTruncate(self, painter:QPainter,data,rect):
         # 获取矩形宽高
@@ -1243,24 +1334,34 @@ class TagPrinter():
         rect =  data.get("rect", None)
         rectW =  self.getPxValue(rect.get("width", 0))
         rectH =  self.getPxValue(rect.get("height", 0))
-        min_font_size = 17  # 最小字号限制
+        min_font_size = 12  # 降低最小字号限制，提高灵活性
         # 获取当前字体和行高
         font = painter.font()
         original_font_size = font.pixelSize()
         current_font_size = original_font_size
-        while current_font_size >= min_font_size:
-            # 设置当前字号
-            font.setPixelSize(int(current_font_size))
+        
+        # 优化：使用二分查找快速找到合适的字体大小
+        left, right = min_font_size, original_font_size
+        best_font_size = min_font_size
+        
+        while left <= right:
+            mid = (left + right) // 2
+            font.setPixelSize(mid)
             painter.setFont(font)
             text_rect = painter.fontMetrics().boundingRect(text)
-            w= text_rect.width()
-            h= text_rect.height()
+            w = text_rect.width()
+            h = text_rect.height()
+            
             if w <= rectW and h <= rectH:
-                break
-            # 减小字号继续尝试
-            current_font_size -= 1  # 每次减小1像素
-        # 应用最终字号
-        font.setPixelSize(max(current_font_size, min_font_size))
+                # 当前大小合适，尝试更大的字体
+                best_font_size = mid
+                left = mid + 1
+            else:
+                # 当前大小不合适，尝试更小的字体
+                right = mid - 1
+        
+        # 应用最佳字号
+        font.setPixelSize(best_font_size)
         painter.setFont(font)
 
     # 查找相对坐标
